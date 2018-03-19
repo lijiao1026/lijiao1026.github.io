@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="李骄的个人博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="上篇文章介绍完了如何从零开始到安装好所有环境，但是数据库用的是oracle的话安装比较繁琐，所以另开一篇。 系统准备oracle分我64位和32位的，本次使用的是64为的安装包，前往oracle官网即可下载到，分别为linux.x64_11gR2_database_1of2和linux.x64_11gR2_database_2of2。做完这些之后如果没有关闭防火墙和配置好固定ip请先看前面文章配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Centos7安装oracle">
+<meta property="og:url" content="http://yoursite.com/2018/03/19/Centos7安装oracle/index.html">
+<meta property="og:site_name" content="李骄的个人博客">
+<meta property="og:description" content="上篇文章介绍完了如何从零开始到安装好所有环境，但是数据库用的是oracle的话安装比较繁琐，所以另开一篇。 系统准备oracle分我64位和32位的，本次使用的是64为的安装包，前往oracle官网即可下载到，分别为linux.x64_11gR2_database_1of2和linux.x64_11gR2_database_2of2。做完这些之后如果没有关闭防火墙和配置好固定ip请先看前面文章配置">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-19T08:36:12.624Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Centos7安装oracle">
+<meta name="twitter:description" content="上篇文章介绍完了如何从零开始到安装好所有环境，但是数据库用的是oracle的话安装比较繁琐，所以另开一篇。 系统准备oracle分我64位和32位的，本次使用的是64为的安装包，前往oracle官网即可下载到，分别为linux.x64_11gR2_database_1of2和linux.x64_11gR2_database_2of2。做完这些之后如果没有关闭防火墙和配置好固定ip请先看前面文章配置">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/19/Centos7安装oracle/"/>
+
+
+
+
+
+  <title>Centos7安装oracle | 李骄的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">李骄的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/19/Centos7安装oracle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李骄">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="李骄的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Centos7安装oracle</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-19T13:29:03+08:00">
+                2018-03-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/03/19/Centos7安装oracle/" class="leancloud_visitors" data-flag-title="Centos7安装oracle">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上篇文章介绍完了如何从零开始到安装好所有环境，但是数据库用的是oracle的话安装比较繁琐，所以另开一篇。</p>
+<h1 id="系统准备"><a href="#系统准备" class="headerlink" title="系统准备"></a>系统准备</h1><p>oracle分我64位和32位的，本次使用的是64为的安装包，前往oracle官网即可下载到，分别为linux.x64_11gR2_database_1of2和linux.x64_11gR2_database_2of2。做完这些之后如果没有关闭防火墙和配置好固定ip请先看前面文章配置。</p>
+<h1 id="用户和环境准备"><a href="#用户和环境准备" class="headerlink" title="用户和环境准备"></a>用户和环境准备</h1><ol>
+<li>安装依赖包，执行命令:yum -y install gcc gcc-c++ make binutilscompat-libstdc++-33 elfutils-libelf elfutillibelf-devel glibc glibcommonglibc-devel libaio libaio-devel libgcclibstdc++ libstdc++-devel unixODBC unixODBC-devel  </li>
+<li>创建用户和组。  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# sysctl -p</span><br><span class="line">[root@localhost ~]# groupadd -g 200 oinstall</span><br><span class="line">[root@localhost ~]# groupadd -g 201 dba</span><br><span class="line">[root@localhost ~]# useradd -u 440 -g oinstall -G dba oracle</span><br><span class="line">[root@localhost ~]# passwd oracle</span><br><span class="line">更改用户 oracle 的密码 。</span><br><span class="line">新的 密码：</span><br><span class="line">无效的密码： 密码少于 8 个字符</span><br><span class="line">重新输入新的 密码：</span><br><span class="line">passwd：所有的身份验证令牌已经成功更新。</span><br><span class="line">```  </span><br><span class="line">3. 修改内核参数。执行命令:`vim /etc/sysctl.conf`，在末尾添加如下信息。</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>net.ipv4.ip_local_port_range= 9000 65500<br>fs.file-max = 6815744<br>kernel.shmall = 10523004<br>kernel.shmmax = 6465333657<br>kernel.shmmni = 4096<br>kernel.sem = 250 32000 100128<br>net.core.rmem_default=262144<br>net.core.wmem_default=262144<br>net.core.rmem_max=4194304<br>net.core.wmem_max=1048576<br>fs.aio-max-nr = 1048576<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4. 修改系统资源限制。执行命令: `vim /etc/security/limits.conf` ，末尾添加如下:</span><br></pre></td></tr></table></figure></p>
+<p>oracle soft nproc 2047<br>oracle hard nproc 16384<br>oracle soft nofile 1024<br>oracle hard nofile 655<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在执行命令:` vi/etc/pam.d/login`</span><br></pre></td></tr></table></figure></p>
+<p>session required pam_namespace.so #下面添加一条pam_limits.so<br>session required pam_limits.so<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在执行命令:` vi/etc/profile` 添加如下</span><br></pre></td></tr></table></figure></p>
+<p>if [ $USER =”oracle” ]; then<br> if [ $SHELL = “/bin/ksh” ];then<br> ulimit -p 16384<br> ulimit -n 65536<br> else<br> ulimit -u 16384 -n 65536<br> fi<br>fi<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">5. 创建安装目录及设置权限，命令行输入:</span><br></pre></td></tr></table></figure></p>
+<p>[root@localhost opt]# mkdir /opt/oracle<br>[root@localhost opt]# mkdir /opt/oracle/app<br>[root@localhost opt]# mkdir /opt/oracle/oradata<br>[root@localhost opt]# chmod 755 /opt/oracle<br>[root@localhost opt]# chmod 755 /opt/oracle/app<br>[root@localhost opt]# chown oracle.oinstall -R /opt/oracle<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">6. 设置环境变量。先切换到oracle用户，执行命令`su oracle`,然后执行命令`vi ~/.bash_profile`,加入如下内容。</span><br></pre></td></tr></table></figure></p>
+<p>export ORACLE_BASE=/opt/oracle/app<br>export ORACLE_HOME=$ORACLE_BASE/product/11.2.0/dbhome_1<br>export PATH=$PATH:$ORACLE_HOME/bin<br>export ORACLE_SID=orcl<br>export ORACLE_PID=orcl<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">再执行命令:`source .bash_profile`立即生效。如果提示没有权限的话，切换到root用户执行。</span><br><span class="line">7. 将已经下载好的两个oracle压缩文件复制到/media文件夹里面。然后解压文件，执行命令:`unzip /media/linux.x64_11gR2_database_1of2.zip`和`unzip /media/linux.x64_11gR2_database_2of2.zip`，解压完后执行命令`xhost +`开启图形化桌面，如果不能执行，就先执行命令:`export DISPLAL=:0`再执行刚才的命令。  </span><br><span class="line">8. 切换到oracle用户，`su oracle`，然后切换到/media/database目录下，先执行`export LANG=EN`切换为安装的时候英文,执行`./runInstall`  </span><br><span class="line"></span><br><span class="line"># 图形化界面安装  </span><br><span class="line">1. 不要输入email，直接next  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle1.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">2. 选择安装数据库软件并创建数据，也可以选择第二项仅安装数据库软件，然后next。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle2.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">3. 选择服务器版本，如图，点击next。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle3.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">4. 单例数据库，如图，点击next。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle4.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">5. 高级模式安装，如图，点击next。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle5.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">6. 添加支持语言，如图，点击next。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle6.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">7. 选择要安装的版本，如图，点击next。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle7.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">8. 安装数据库目录，如图，点击next。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle8.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">9. 创建详细目录。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle9.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">10. 选择配置类型。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle10.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">11. 数据库与服务名。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle11.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">12. 开启自动内存管理（如果512m太大，会出现提示，减少一些就可以），然后先不要点击next，而是点击Memory旁边的Charactor sets选项。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle12.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">13. 设置默认编码为UTF-8。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle13.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">14. 启用oracle企业管理控制台OEM。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle14.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">15. 选择数据库文件目录。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle15.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">16. 自动备份。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle16.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">17. 设置数据库用户名和密码，他是有一个密码建议的，否则会提示错误，密码建议是包含大写和小写字母，总长度不能低于8位。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle17.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">18. 授权的组。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle18.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">19. 检查oracle一些安装要求，包都已经安装，直接忽略。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle19.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;  </span><br><span class="line">20. 开始安装。  </span><br><span class="line">&lt;img src=&quot;/images/Oracle/oracle20.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;   </span><br><span class="line">安装完成后，会出来一个对话框，提示使用root用户执行这两个脚本。</span><br></pre></td></tr></table></figure></p>
+<p>[root@localhost ~]$ /opt/oracle/oraInventory/orainstRoot.sh<br>[root@localhost ~]$ /opt/oracle/app/product/11.2.0/dbhome_1/root.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">21. 启动数据库。执行命令:</span><br></pre></td></tr></table></figure></p>
+<p>[root@oracledb ~]# su –oracle<br>[oracle@oracledb ~]# lsnrctl start<br>[oracle@oracledb ~]# sqlplus / as sys<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">22. 设置oracle开机启动。</span><br></pre></td></tr></table></figure></p>
+<p>1.键入命令“vi /etc/oratab”（使用vi编辑器编辑文件/etc/oratab）<br>2.进入vi编辑器后，找到“orcl:/opt/oracle/app/product/11.2.0/dbhome_1:N”，改为“orcl:/opt/oracle/app/product/11.2.0/dbhome_1:Y”。修改完成后，保存退出vi。<br>3.键入命令 vi /etc/rc.d/rc.local<br>4.在vi编辑器中，添加：<br>su oracle -lc “/opt/oracle/app/product/11.2.0/dbhome_1/bin/lsnrctl start”<br>su oracle -lc /opt/oracle/app/product/11.2.0/dbhome_1/bin/dbstart<br>5.保存并退出vi。<br><code>`</code></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/19/Linux从零到成功部署项目/" rel="next" title="Linux从零到成功部署项目">
+                <i class="fa fa-chevron-left"></i> Linux从零到成功部署项目
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDU0MS8xMTA3OQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">李骄</p>
+              <p class="site-description motion-element" itemprop="description">且行且珍惜</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/lijiao1026" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#系统准备"><span class="nav-number">1.</span> <span class="nav-text">系统准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户和环境准备"><span class="nav-number">2.</span> <span class="nav-text">用户和环境准备</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李骄</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Es28b27txq4k5IvmVyxEknnk-gzGzoHsz", "9A4atOKhPUF1gT9Xf3jfgDtO");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
