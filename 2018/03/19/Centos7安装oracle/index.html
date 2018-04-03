@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://yoursite.com/images/Oracle/oracle18.jpg">
 <meta property="og:image" content="http://yoursite.com/images/Oracle/oracle19.jpg">
 <meta property="og:image" content="http://yoursite.com/images/Oracle/oracle20.jpg">
-<meta property="og:updated_time" content="2018-03-20T00:59:47.814Z">
+<meta property="og:updated_time" content="2018-04-03T07:29:50.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Centos7安装oracle">
 <meta name="twitter:description" content="上篇文章介绍完了如何从零开始到安装好所有环境，但是数据库用的是oracle的话安装比较繁琐，所以另开一篇。 系统准备oracle分我64位和32位的，本次使用的是64为的安装包，前往oracle官网即可下载到，分别为linux.x64_11gR2_database_1of2和linux.x64_11gR2_database_2of2。做完这些之后如果没有关闭防火墙和配置好固定ip请先看前面文章配置">
@@ -371,7 +371,7 @@
 <li><p>设置环境变量。先切换到oracle用户，执行命令<code>su oracle</code>,然后执行命令<code>vi ~/.bash_profile</code>,加入如下内容。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export ORACLE_BASE=/opt/oracle/app</span><br><span class="line">export ORACLE_HOME=$ORACLE_BASE/product/11.2.0/dbhome_1</span><br><span class="line">export PATH=$PATH:$ORACLE_HOME/bin</span><br><span class="line">export ORACLE_SID=orcl</span><br><span class="line">export ORACLE_PID=orcl</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>再执行命令:<code>source .bash_profile</code>立即生效。如果提示没有权限的话，切换到root用户执行。</p>
+<li><p>再执行命令:<code>source .bash_profile</code>立即生效。如果提示没有权限的话，使用sudo执行。</p>
 </li>
 <li>将已经下载好的两个oracle压缩文件复制到/media文件夹里面。然后解压文件，执行命令:<code>unzip /media/linux.x64_11gR2_database_1of2.zip</code>和<code>unzip /media/linux.x64_11gR2_database_2of2.zip</code>，解压完后执行命令<code>xhost +</code>开启图形化桌面，如果不能执行，就先执行命令:<code>export DISPLAL=:0</code>再执行刚才的命令。  </li>
 <li>切换到oracle用户，<code>su oracle</code>，然后切换到/media/database目录下，先执行<code>export LANG=EN</code>切换为安装的时候英文,执行<code>./runInstall</code>  </li>
@@ -400,7 +400,7 @@
 <li><p>安装完成后，会出来一个对话框，提示使用root用户执行这两个脚本。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]$ /opt/oracle/oraInventory/orainstRoot.sh</span><br><span class="line">[root@localhost ~]$ /opt/oracle/app/product/11.2.0/dbhome_1/root.</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>启动数据库。执行命令:</p>
+<li><p>启动数据库。执行命令如下，如果没有配置好环境变量，将会无法启动！</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@oracledb ~]# su –oracle</span><br><span class="line">[oracle@oracledb ~]# lsnrctl start</span><br><span class="line">[oracle@oracledb ~]# sqlplus / as sys</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>设置oracle开机启动。  </p>
