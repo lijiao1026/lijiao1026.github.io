@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="李骄的个人博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="最近几周都都在搞k8s的集群和自动化伸缩，这里记录下完整的过程，写此教程的时候使用的是重置操作系统的2台什么都没有的百度云服务器。 硬件环境2台百度云服务器，一台为master节点配置为2核8G，一台为node节点配置为2核4G，操作系统为Ubuntu16.4 安装docker(master和node节点都执行以下操作) 添加使用 HTTPS 传输的软件包以及 CA 证书apt-get updat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes(k8s) 1.14版本安装，部署和自动化伸缩">
+<meta property="og:url" content="http://yoursite.com/2019/04/03/kubernetes-k8s-1-14版本安装，部署和自动化伸缩/index.html">
+<meta property="og:site_name" content="李骄的个人博客">
+<meta property="og:description" content="最近几周都都在搞k8s的集群和自动化伸缩，这里记录下完整的过程，写此教程的时候使用的是重置操作系统的2台什么都没有的百度云服务器。 硬件环境2台百度云服务器，一台为master节点配置为2核8G，一台为node节点配置为2核4G，操作系统为Ubuntu16.4 安装docker(master和node节点都执行以下操作) 添加使用 HTTPS 传输的软件包以及 CA 证书apt-get updat">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/MarkdownImage/getHpaMax.jpg">
+<meta property="og:image" content="http://yoursite.com/images/MarkdownImage/getHpaMin.jpg">
+<meta property="og:updated_time" content="2019-04-03T07:35:40.270Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kubernetes(k8s) 1.14版本安装，部署和自动化伸缩">
+<meta name="twitter:description" content="最近几周都都在搞k8s的集群和自动化伸缩，这里记录下完整的过程，写此教程的时候使用的是重置操作系统的2台什么都没有的百度云服务器。 硬件环境2台百度云服务器，一台为master节点配置为2核8G，一台为node节点配置为2核4G，操作系统为Ubuntu16.4 安装docker(master和node节点都执行以下操作) 添加使用 HTTPS 传输的软件包以及 CA 证书apt-get updat">
+<meta name="twitter:image" content="http://yoursite.com/images/MarkdownImage/getHpaMax.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/03/kubernetes-k8s-1-14版本安装，部署和自动化伸缩/"/>
+
+
+
+
+
+  <title>kubernetes(k8s) 1.14版本安装，部署和自动化伸缩 | 李骄的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">李骄的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/03/kubernetes-k8s-1-14版本安装，部署和自动化伸缩/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李骄">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="李骄的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">kubernetes(k8s) 1.14版本安装，部署和自动化伸缩</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-03T13:59:16+08:00">
+                2019-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/03/kubernetes-k8s-1-14版本安装，部署和自动化伸缩/" class="leancloud_visitors" data-flag-title="kubernetes(k8s) 1.14版本安装，部署和自动化伸缩">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近几周都都在搞k8s的集群和自动化伸缩，这里记录下完整的过程，写此教程的时候使用的是重置操作系统的2台什么都没有的百度云服务器。</p>
+<h3 id="硬件环境"><a href="#硬件环境" class="headerlink" title="硬件环境"></a>硬件环境</h3><p>2台百度云服务器，一台为master节点配置为2核8G，一台为node节点配置为2核4G，操作系统为Ubuntu16.4</p>
+<h3 id="安装docker-master和node节点都执行以下操作"><a href="#安装docker-master和node节点都执行以下操作" class="headerlink" title="安装docker(master和node节点都执行以下操作)"></a>安装docker(master和node节点都执行以下操作)</h3><ol>
+<li>添加使用 HTTPS 传输的软件包以及 CA 证书<br>apt-get update &amp;&amp; apt-get install apt-transport-https ca-certificates curl software-properties-common</li>
+<li>添加软件源的 GPG 密钥<br>curl -fsSL <a href="https://download.docker.com/linux/ubuntu/gpg" target="_blank" rel="noopener">https://download.docker.com/linux/ubuntu/gpg</a> | apt-key add -</li>
+<li>向 source.list 中添加 Docker 软件源<br>sudo add-apt-repository \<br>“deb [arch=amd64] <a href="https://download.docker.com/linux/ubuntu" target="_blank" rel="noopener">https://download.docker.com/linux/ubuntu</a> \<br>$(lsb_release -cs) \<br>stable”</li>
+<li>安装docker18.06.2<br>apt-get update &amp;&amp; apt-get install docker-ce=18.06.2~ce~3-0~ubuntu</li>
+<li>设置环境<br>cat &gt; /etc/docker/daemon.json &lt;&lt;EOF<br>{<br>“exec-opts”: [“native.cgroupdriver=systemd”],<br>“log-driver”: “json-file”,<br>“log-opts”: {<br>“max-size”: “100m”<br>},<br>“storage-driver”: “overlay2”<br>}<br>EOF<br>创建文件目录并复制<br>mkdir -p /etc/systemd/system/docker.service.d</li>
+<li>因为配置文件变化，重启docker<br>systemctl daemon-reload<br>systemctl restart docker  </li>
+</ol>
+<h3 id="安装kubeadm，kubelet和kubectl-master和node节点都执行如下操作"><a href="#安装kubeadm，kubelet和kubectl-master和node节点都执行如下操作" class="headerlink" title="安装kubeadm，kubelet和kubectl(master和node节点都执行如下操作)"></a>安装kubeadm，kubelet和kubectl(master和node节点都执行如下操作)</h3><p>这里因为墙的原因需要更换为阿里源，执行如下命令</p>
+<ol>
+<li>apt-get update &amp;&amp; apt-get install -y apt-transport-https curl</li>
+<li>curl <a href="https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg</a> | apt-key add -</li>
+<li>cat &lt;<eof>/etc/apt/sources.list.d/kubernetes.list<br>deb <a href="https://mirrors.aliyun.com/kubernetes/apt/" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/apt/</a> kubernetes-xenial main<br>EOF</eof></li>
+<li>apt-get update </li>
+<li>apt-get install -y kubelet kubeadm kubectl</li>
+<li>apt-mark hold kubelet kubeadm kubectl</li>
+</ol>
+<p>关闭snap<br>sudo swapoff -a</p>
+<h3 id="在master主机上安装kubeadm"><a href="#在master主机上安装kubeadm" class="headerlink" title="在master主机上安装kubeadm"></a>在master主机上安装kubeadm</h3><p>由于我们使用flannel网络插件，所以需要在启动参数上加上–pod-network-cidr=10.244.0.0/16，由于Kubenetes默认Registries地址是k8s.gcr.io，很明显，在国内并不能访问gcr.io，，但是在1.13之后的版本（这里我们使用1.14当然也支持啦）中终于解决了国内的痛点，其增加了一个–image-repository参数，默认值是k8s.gcr.io，我们将其指定为国内镜像地址：registry.aliyuncs.com/google_containers。所以完整命令为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init --image-repository registry.aliyuncs.com/google_containers  --pod-network-cidr=10.244.0.0/16</span><br><span class="line">```  </span><br><span class="line">如果成功的话会生成一行指令，用于让node节点加入主节点，类似于如下指令</span><br></pre></td></tr></table></figure></p>
+<p>kubeadm join 192.168.16.4:6443 –token 9tjrv2.82mwetagtns3hpg4 \<br>    –discovery-token-ca-cert-hash sha256:45c5981817448230c4afa9a6c0a38c96286fe3ce2bda29b2f49db3e2ab155e4d<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">要使kubectl为非root用户工作，请运行以下命令，这些命令也是kubeadm init输出的一部分：</span><br></pre></td></tr></table></figure></p>
+<p>mkdir -p $HOME/.kube<br>sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config<br>sudo chown $(id -u):$(id -g) $HOME/.kube/config<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">或者，如果您是root用户，则可以运行  </span><br><span class="line">export KUBECONFIG=/etc/kubernetes/admin.conf</span><br><span class="line"></span><br><span class="line">### 安装flannel网络附件组件</span><br><span class="line">必须在任何应用程序之前部署网络。此外，CoreDNS将不会在安装网络之前启动。  </span><br><span class="line">设置/proc/sys/net/bridge/bridge-nf-call-iptables为1通过运行sysctl net.bridge.bridge-nf-call-iptables=1 将桥接的IPv4流量传递到iptables的链。执行如下2个命令</span><br></pre></td></tr></table></figure></p>
+<p>sysctl net.bridge.bridge-nf-call-iptables=1<br>kubectl apply -f <a href="https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml" target="_blank" rel="noopener">https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">等待几分钟执行kubectl get pods --all-namespaces命令来查看是否所有的pod都是running状态。</span><br><span class="line">&lt;img src=&quot;/images/MarkdownImage/getPods.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;</span><br><span class="line">### 将node节点加入集群</span><br><span class="line">执行init时候生成的命令。</span><br></pre></td></tr></table></figure></p>
+<p>kubeadm join 192.168.16.4:6443 –token 9tjrv2.82mwetagtns3hpg4 \<br>    –discovery-token-ca-cert-hash sha256:45c5981817448230c4afa9a6c0a38c96286fe3ce2bda29b2f49db3e2ab155e4d<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;/images/MarkdownImage/nodeJoin.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;</span><br><span class="line">### 安装metrics-server</span><br><span class="line">为了实现服务的自动伸缩必须获得资源也就是CPU使用情况，资源使用情况的度量（如容器的 CPU 和内存使用）可以通过 Metrics API 获取。在 k8s.io/metrics 维护 必须部署 metrics-server 才能使用该 API，metrics-server 通过调用 Kubelet Summary API 获取数据  开启聚合层(Aggregation Layer) 。执行命令获取metrics-server资源和更改相关文件。</span><br></pre></td></tr></table></figure></p>
+<p>git clone <a href="https://github.com/kubernetes-incubator/metrics-server" target="_blank" rel="noopener">https://github.com/kubernetes-incubator/metrics-server</a><br>cd metrics-server/deploy/1.8+/<br>vim metrics-server-deployment.yaml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">将配置文件的内容改成如下，修改镜像地址，因为墙的原因下载不到，增加配置。修改好后执行kubectl create -f ./</span><br><span class="line">&lt;img src=&quot;/images/MarkdownImage/metrics-server.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;</span><br><span class="line">### Horizotal Pod Autoscaler示例实现自动伸缩</span><br><span class="line">1. 启动运行映像的部署并将其作为服务公开</span><br></pre></td></tr></table></figure></p>
+<p>kubectl run php-apache –image=googlecontainer/hpa-example –requests=cpu=200m –expose –port=80<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2. 服务器正在运行，我们将使用kubectl autoscale创建自动 缩放器。以下命令将创建一个Horizontal Pod Autoscaler，它维护由我们在这些指令的第一步中创建的php-apache部署控制的Pod的1到10个副本。粗略地说，HPA将增加和减少副本数量（通过部署）以保持所有Pod的平均CPU利用率为50％（因为每个pod通过kubectl运行请求200毫安核，这意味着平均CPU使用率为100毫-cores）</span><br></pre></td></tr></table></figure></p>
+<p>kubectl autoscale deployment php-apache –cpu-percent=50 –min=1 –max=10<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">可以通过运行来检查autoscaler的当前状态:  </span><br><span class="line">kubectl get hpa  </span><br><span class="line">3. 先创建一个busybox的pod，用来进行压力测试</span><br></pre></td></tr></table></figure></p>
+<p>cat &lt;&lt; EOF &gt; pod-busybox.yaml<br>apiVersion: v1<br>kind: Pod<br>metadata:<br>  name: busybox<br>  namespace: default<br>spec:<br>  containers:</p>
+<ul>
+<li>image: busybox<br>command:<ul>
+<li>sleep</li>
+<li>“3600”<br>imagePullPolicy: IfNotPresent<br>name: busybox<br>restartPolicy: Always<br>EOF<br>kubectl create -f pod-busybox.yaml<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4. 进入容器，并向php-apache服务发送无限循环的查询，查看自动凋节器如何对增加的负载作出反应。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>docker  exec -it 容器Id  /bin/sh<br>while true; do wget -q -O- <a href="http://php-apache.default.svc.cluster.local" target="_blank" rel="noopener">http://php-apache.default.svc.cluster.local</a>; done<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;/images/MarkdownImage/busyBox.jpg&quot; width=&quot;600px&quot; height=&quot;500px&quot; alt=&quot;图片飞到火星去了&quot;&gt;&lt;/img&gt;</span><br><span class="line">5. 等待1分钟左右的时间，通过执行以下操作来查看更高的CPU负载</span><br></pre></td></tr></table></figure></p>
+<p>kubectl get hpa<br><code>`</code><br><img src="/images/MarkdownImage/getHpaMax.jpg" width="600px" height="500px" alt="图片飞到火星去了"></p>
+<ol>
+<li>持续观察HPA，可以看到副本数量升到10，接下来在busybox的容器终端键入crtl+c来终止请求，等待一段时间（通常要好几分钟）验证是不是副本数量降为1。<br><img src="/images/MarkdownImage/getHpaMin.jpg" width="600px" height="500px" alt="图片飞到火星去了"></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/28/Java设计模式之享元模式/" rel="next" title="Java设计模式之享元模式">
+                <i class="fa fa-chevron-left"></i> Java设计模式之享元模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDU0MS8xMTA3OQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">李骄</p>
+              <p class="site-description motion-element" itemprop="description">且行且珍惜</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/lijiao1026" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#硬件环境"><span class="nav-number">1.</span> <span class="nav-text">硬件环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装docker-master和node节点都执行以下操作"><span class="nav-number">2.</span> <span class="nav-text">安装docker(master和node节点都执行以下操作)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装kubeadm，kubelet和kubectl-master和node节点都执行如下操作"><span class="nav-number">3.</span> <span class="nav-text">安装kubeadm，kubelet和kubectl(master和node节点都执行如下操作)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在master主机上安装kubeadm"><span class="nav-number">4.</span> <span class="nav-text">在master主机上安装kubeadm</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李骄</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Es28b27txq4k5IvmVyxEknnk-gzGzoHsz", "9A4atOKhPUF1gT9Xf3jfgDtO");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
