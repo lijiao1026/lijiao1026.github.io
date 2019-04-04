@@ -73,6 +73,8 @@
 
 
 
+  
+
 
   <link rel="alternate" href="/atom.xml" title="李骄的个人博客" type="application/atom+xml" />
 
@@ -81,17 +83,21 @@
 
 
 
-<meta name="description" content="定义为子系统中的一组接口提供一个一致的界面，此模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。 主要作用 实现客户类与子系统类的送耦合 降低原有系统的复杂度 提高了客户端使用的便捷性，使得客户端无须关心子系统的工作细节，通过外观角色即可调用相关功能。  实例讲解假设有这样一个场景，我们玩电脑需要3步，打开电源，打开电脑，打开显示器。我们不玩电脑了，也需要3步，关闭电脑，关闭显示器，关闭">
+<meta name="description" content="由于此前我使用的是docker swarm，所以写的是docker-compose文件用于容器编排，没想到k8s本身支持将docker-compose文件转换为yaml文件运行，记录下使用过程。 安装Kompose这里还是在Ubuntu的百度云上操作，执行命令安装。123curl -L https://github.com/kubernetes/kompose/releases/download/">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java设计模式之外观模式">
-<meta property="og:url" content="http://yoursite.com/2018/05/29/Java设计模式之外观模式/index.html">
+<meta property="og:title" content="k8s将docker-compose转换和持久化存储卷使用">
+<meta property="og:url" content="http://yoursite.com/2019/04/04/k8s将docker-compose转换和持久化存储卷使用/index.html">
 <meta property="og:site_name" content="李骄的个人博客">
-<meta property="og:description" content="定义为子系统中的一组接口提供一个一致的界面，此模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。 主要作用 实现客户类与子系统类的送耦合 降低原有系统的复杂度 提高了客户端使用的便捷性，使得客户端无须关心子系统的工作细节，通过外观角色即可调用相关功能。  实例讲解假设有这样一个场景，我们玩电脑需要3步，打开电源，打开电脑，打开显示器。我们不玩电脑了，也需要3步，关闭电脑，关闭显示器，关闭">
+<meta property="og:description" content="由于此前我使用的是docker swarm，所以写的是docker-compose文件用于容器编排，没想到k8s本身支持将docker-compose文件转换为yaml文件运行，记录下使用过程。 安装Kompose这里还是在Ubuntu的百度云上操作，执行命令安装。123curl -L https://github.com/kubernetes/kompose/releases/download/">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-29T02:46:33.660Z">
+<meta property="og:image" content="http://yoursite.com/images/kompose/get-pods-pending.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kompose/pending-log.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kompose/bound.jpg">
+<meta property="og:updated_time" content="2019-04-04T08:22:54.439Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java设计模式之外观模式">
-<meta name="twitter:description" content="定义为子系统中的一组接口提供一个一致的界面，此模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。 主要作用 实现客户类与子系统类的送耦合 降低原有系统的复杂度 提高了客户端使用的便捷性，使得客户端无须关心子系统的工作细节，通过外观角色即可调用相关功能。  实例讲解假设有这样一个场景，我们玩电脑需要3步，打开电源，打开电脑，打开显示器。我们不玩电脑了，也需要3步，关闭电脑，关闭显示器，关闭">
+<meta name="twitter:title" content="k8s将docker-compose转换和持久化存储卷使用">
+<meta name="twitter:description" content="由于此前我使用的是docker swarm，所以写的是docker-compose文件用于容器编排，没想到k8s本身支持将docker-compose文件转换为yaml文件运行，记录下使用过程。 安装Kompose这里还是在Ubuntu的百度云上操作，执行命令安装。123curl -L https://github.com/kubernetes/kompose/releases/download/">
+<meta name="twitter:image" content="http://yoursite.com/images/kompose/get-pods-pending.jpg">
 
 
 
@@ -121,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/05/29/Java设计模式之外观模式/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/04/04/k8s将docker-compose转换和持久化存储卷使用/"/>
 
 
 
 
 
-  <title>Java设计模式之外观模式 | 李骄的个人博客</title>
+  <title>k8s将docker-compose转换和持久化存储卷使用 | 李骄的个人博客</title>
   
 
 
@@ -244,7 +250,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/29/Java设计模式之外观模式/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/04/k8s将docker-compose转换和持久化存储卷使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="李骄">
@@ -261,7 +267,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java设计模式之外观模式</h1>
+          <h1 class="post-title" itemprop="name headline">k8s将docker-compose转换和持久化存储卷使用</h1>
         
 
         <div class="post-meta">
@@ -273,8 +279,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-29T10:20:32+08:00">
-                2018-05-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-04T15:21:16+08:00">
+                2019-04-04
               </time>
             
 
@@ -291,7 +297,7 @@
 
           
           
-             <span id="/2018/05/29/Java设计模式之外观模式/" class="leancloud_visitors" data-flag-title="Java设计模式之外观模式">
+             <span id="/2019/04/04/k8s将docker-compose转换和持久化存储卷使用/" class="leancloud_visitors" data-flag-title="k8s将docker-compose转换和持久化存储卷使用">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -322,49 +328,17 @@
       
 
       
-        <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>为子系统中的一组接口提供一个一致的界面，此模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。</p>
-<h3 id="主要作用"><a href="#主要作用" class="headerlink" title="主要作用"></a>主要作用</h3><ul>
-<li>实现客户类与子系统类的送耦合</li>
-<li>降低原有系统的复杂度</li>
-<li>提高了客户端使用的便捷性，使得客户端无须关心子系统的工作细节，通过外观角色即可调用相关功能。</li>
-</ul>
-<h3 id="实例讲解"><a href="#实例讲解" class="headerlink" title="实例讲解"></a>实例讲解</h3><p>假设有这样一个场景，我们玩电脑需要3步，打开电源，打开电脑，打开显示器。我们不玩电脑了，也需要3步，关闭电脑，关闭显示器，关闭电源。这样麻烦的步骤可以一步完成就好了，于是就产生了外观模式。</p>
-<ul>
-<li><p>电脑类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Computer</span><br><span class="line">&#123;</span><br><span class="line">    public void on()</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;打开电脑&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void off()</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;关闭电脑&quot;);    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>显示器类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Monitor</span><br><span class="line">&#123;</span><br><span class="line">    public void on()</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;打开显示器&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public void off()</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;关闭显示器&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>电源类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class PowerSupply</span><br><span class="line">&#123;</span><br><span class="line">    public void on()</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;打开电源&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public void off()</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;关闭电源&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>外观类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">public class Facade</span><br><span class="line">&#123;</span><br><span class="line">    Computer computer;</span><br><span class="line">    </span><br><span class="line">    Monitor monitor;</span><br><span class="line">    </span><br><span class="line">    PowerSupply powerSupply;</span><br><span class="line">    </span><br><span class="line">    public Facade(Computer computer, Monitor monitor, PowerSupply powerSupply)</span><br><span class="line">    &#123;</span><br><span class="line">        this.computer = computer;</span><br><span class="line">        this.monitor = monitor;</span><br><span class="line">        this.powerSupply = powerSupply;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void openAll()</span><br><span class="line">    &#123;</span><br><span class="line">        powerSupply.on();</span><br><span class="line">        computer.on();</span><br><span class="line">        monitor.on();</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void turnOffAll()</span><br><span class="line">    &#123;</span><br><span class="line">        computer.off();</span><br><span class="line">        monitor.off();</span><br><span class="line">        powerSupply.off();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>测试类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Test</span><br><span class="line">&#123;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args)</span><br><span class="line">    &#123;</span><br><span class="line">        Computer computer=new Computer();</span><br><span class="line">        Monitor monitor=new Monitor();</span><br><span class="line">        PowerSupply powerSupply=new PowerSupply();</span><br><span class="line">        Facade facade=new Facade(computer, monitor, powerSupply);</span><br><span class="line">        facade.openAll();</span><br><span class="line">        facade.turnOffAll();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>最后的输出结果为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">打开电源</span><br><span class="line">打开电脑</span><br><span class="line">打开显示器</span><br><span class="line">关闭电脑</span><br><span class="line">关闭显示器</span><br><span class="line">关闭电源</span><br></pre></td></tr></table></figure></p>
-<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><h5 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h5><ul>
-<li><p>降低了客户类与子系统类的耦合度，实现了子系统与客户之间的松耦合关系</p>
-<blockquote>
-<p>1.只是提供了一个访问子系统的统一入口，并不影响用户直接使用子系统类<br>2.减少了与子系统的关联对象，实现了子系统与客户之间<br>的松耦合关系，松耦合使得子系统的组件变化不会影响到它的客户。</p>
-</blockquote>
-</li>
-<li><p>外观模式对客户屏蔽了子系统组件，从而简化了接口，减少了客户处理的对象数目并使子系统的使用更加简单。</p>
-<blockquote>
-<p>1.引入外观角色之后，用户只需要与外观角色交互；<br>2.用户与子系统之间的复杂逻辑关系由外观角色来实现</p>
-</blockquote>
-</li>
-<li><p>降低原有系统的复杂度和系统中的编译依赖性，并简化了系统在不同平台之间的移植过程。</p>
-</li>
-</ul>
-<h5 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h5><ul>
-<li>在不引入抽象外观类的情况下，增加新的子系统可能需要修改外观类或客户端的源代码，违背了“开闭原则”</li>
-<li>不能很好地限制客户使用子系统类，如果对客户访问子系统类做太多的限制则减少了可变性和灵活性。</li>
-</ul>
+        <p>由于此前我使用的是docker swarm，所以写的是docker-compose文件用于容器编排，没想到k8s本身支持将docker-compose文件转换为yaml文件运行，记录下使用过程。</p>
+<h3 id="安装Kompose"><a href="#安装Kompose" class="headerlink" title="安装Kompose"></a>安装Kompose</h3><p>这里还是在Ubuntu的百度云上操作，执行命令安装。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://github.com/kubernetes/kompose/releases/download/v1.16.0/kompose-linux-amd64 -o kompose</span><br><span class="line">chmod +x kompose</span><br><span class="line">sudo mv ./kompose /usr/<span class="built_in">local</span>/bin/kompose</span><br></pre></td></tr></table></figure></p>
+<h3 id="使用Kompose"><a href="#使用Kompose" class="headerlink" title="使用Kompose"></a>使用Kompose</h3><p>将目录切换到需要转换的docker-compose.yml的文件的目录，注意文件名必须改成docker-compose.yml，不然转换会失败。以下是我的测试文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">version: &quot;3&quot;</span><br><span class="line">services:</span><br><span class="line">  # 指定服务名称</span><br><span class="line">  #服务注册与发现中心</span><br><span class="line">#  eurekaServer:</span><br><span class="line">#    image: springcloud-eureka-server:1.0.1</span><br><span class="line">#    hostname: eurekaServer</span><br><span class="line">#    ports:</span><br><span class="line">#      - &quot;8761:8761&quot;</span><br><span class="line">#    networks:</span><br><span class="line">#      my-overlay-network:</span><br><span class="line">#        aliases:</span><br><span class="line">#          - eurekaServer</span><br><span class="line">  dbmysql:</span><br><span class="line">    image: mysql:5.7.22</span><br><span class="line">    hostname: dbmysql</span><br><span class="line">    deploy:</span><br><span class="line">      replicas: 2</span><br><span class="line">      update_config:</span><br><span class="line">        parallelism: 1</span><br><span class="line">        delay: 2s</span><br><span class="line">      restart_policy:</span><br><span class="line">        condition: on-failure</span><br><span class="line">    volumes:</span><br><span class="line">      - /usr/local/data/mysql:/var/lib/mysql</span><br><span class="line">    networks:</span><br><span class="line">      my-overlay-network:</span><br><span class="line">        aliases:</span><br><span class="line">          - dbmysql</span><br><span class="line">    environment:</span><br><span class="line">      MYSQL_ROOT_PASSWORD: 123456</span><br><span class="line">      MYSQL_DATABASE: cloud-ida</span><br><span class="line">    ports:</span><br><span class="line">      - &quot;3306:3306&quot;</span><br><span class="line">    labels:</span><br><span class="line">      kompose.service.type: NodePort</span><br><span class="line">networks:</span><br><span class="line">  my-overlay-network:</span><br><span class="line">    driver: overlay</span><br></pre></td></tr></table></figure></p>
+<p>会生成三个文件，dbmysql-claim0-persistentvolumeclaim.yaml，dbmysql-pod.yaml，dbmysql-service.yaml。这里修改下dbmysql-claim0-persistentvolumeclaim.yaml文件，添加一行storageClassName: manual，修改成如下所示:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  creationTimestamp: null</span><br><span class="line">  labels:</span><br><span class="line">    io.kompose.service: dbmysql-claim0</span><br><span class="line">  name: dbmysql-claim0</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: manual</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 100Mi</span><br><span class="line">status: &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>移动原本的docker-compose.yml文件到其他目录，使得目录就3个yaml文件，然后执行如下命令.  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@instance-4r3y9wgn:/usr/local/test# ls</span><br><span class="line">dbmysql-claim0-persistentvolumeclaim.yaml  dbmysql-pod.yaml  dbmysql-service.yaml</span><br><span class="line">root@instance-4r3y9wgn:/usr/local/test# kubectl create -f ./</span><br><span class="line">persistentvolumeclaim/dbmysql-claim0 created</span><br><span class="line">pod/dbmysql created</span><br><span class="line">service/dbmysql created</span><br></pre></td></tr></table></figure>
+<p>执行完成后查看pod是否启动成功，发现pod一直处于pending状态。<img src="/images/kompose/get-pods-pending.jpg" width="600px" height="500px" alt="图片飞到火星去了"><br>查看日志发现是请求的物理资源不存在。<br><img src="/images/kompose/pending-log.jpg" width="600px" height="500px" alt="图片飞到火星去了"> </p>
+<h3 id="创建持久化存储卷PersistentVolume"><a href="#创建持久化存储卷PersistentVolume" class="headerlink" title="创建持久化存储卷PersistentVolume"></a>创建持久化存储卷PersistentVolume</h3><p>K8S支持hostPath在单节点集群上进行开发和测试。hostPath PersistentVolume使用节点上的文件或目录来模拟网络附加存储。以下是一份hostPath PersistentVolume的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">kind: PersistentVolume</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: task-pv-volume</span><br><span class="line">  labels:</span><br><span class="line">    type: local</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: manual</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 10Gi</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  hostPath:</span><br><span class="line">    path: &quot;/mnt/data&quot;</span><br></pre></td></tr></table></figure></p>
+<p>配置文件指定卷位于/mnt/data群集的节点上。该配置还指定了10个字节的大小和访问模式ReadWriteOnce，这意味着卷可以由单个节点以读写方式安装。它定义PersistentVolume 的StorageClass名称 manual，该名称将用于将PersistentVolumeClaim请求绑定到此PersistentVolume。执行命令<code>kubectl apply -f pv-volume.yaml</code>，查看有关PersistentVolume的信息：<br><img src="/images/kompose/bound.jpg" width="600px" height="500px" alt="图片飞到火星去了"><br>可以看见已经将PersistentVolumeClaim绑定到PersistentVolume。再次查看<code>kubectl get pods --all-namespaces</code>发现刚才处于pending的pod已经成为runing状态了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这里部署的是一个mysql数据库，因为pod如果删除重建的话会导致数据丢失，所以需要将数据库的数据挂载到宿主机上，这样就可以实现pod重启而不会倒是原本的数据丢失。而且这边采用nodePort的方式我们可以根据node节点的外网IP+端口实现远程访问数据库。可是使用<code>kubectl get service</code>查看端口</p>
 
       
     </div>
@@ -389,8 +363,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/05/09/Java设计模式之代理模式/" rel="next" title="Java设计模式之代理模式">
-                <i class="fa fa-chevron-left"></i> Java设计模式之代理模式
+              <a href="/2019/04/03/kubernetes-k8s-1-14版本安装，部署和自动化伸缩/" rel="next" title="kubernetes(k8s) 1.14版本安装，部署和自动化伸缩">
+                <i class="fa fa-chevron-left"></i> kubernetes(k8s) 1.14版本安装，部署和自动化伸缩
               </a>
             
           </div>
@@ -398,10 +372,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/05/29/Java设计模式之桥接模式/" rel="prev" title="Java设计模式之桥接模式">
-                Java设计模式之桥接模式 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -537,7 +507,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主要作用"><span class="nav-number">2.</span> <span class="nav-text">主要作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例讲解"><span class="nav-number">3.</span> <span class="nav-text">实例讲解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优缺点"><span class="nav-number">4.</span> <span class="nav-text">优缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#优点"><span class="nav-number">4.0.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#缺点"><span class="nav-number">4.0.2.</span> <span class="nav-text">缺点</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Kompose"><span class="nav-number">1.</span> <span class="nav-text">安装Kompose</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Kompose"><span class="nav-number">2.</span> <span class="nav-text">使用Kompose</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建持久化存储卷PersistentVolume"><span class="nav-number">3.</span> <span class="nav-text">创建持久化存储卷PersistentVolume</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

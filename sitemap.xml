@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2019/04/04/k8s%E5%B0%86docker-compose%E8%BD%AC%E6%8D%A2%E5%92%8C%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8%E5%8D%B7%E4%BD%BF%E7%94%A8/</loc>
+    
+    <lastmod>2019-04-04T08:22:54.439Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2018/02/28/hello-world/</loc>
     
     <lastmod>2019-04-04T01:01:58.991Z</lastmod>
