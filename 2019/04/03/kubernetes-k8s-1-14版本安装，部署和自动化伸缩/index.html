@@ -94,7 +94,7 @@
 <meta property="og:image" content="http://yoursite.com/images/k8s/busybox.jpg">
 <meta property="og:image" content="http://yoursite.com/images/k8s/getHpaMax.jpg">
 <meta property="og:image" content="http://yoursite.com/images/k8s/getHpaMin.jpg">
-<meta property="og:updated_time" content="2019-04-03T08:58:57.944Z">
+<meta property="og:updated_time" content="2019-04-08T08:31:19.060Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="kubernetes(k8s) 1.14版本安装，部署和自动化伸缩">
 <meta name="twitter:description" content="最近几周都都在搞k8s的集群和自动化伸缩，这里记录下完整的过程，写此教程的时候使用的是重置操作系统的2台什么都没有的百度云服务器。 硬件环境2台百度云服务器，一台为master节点配置为2核8G，一台为node节点配置为2核4G，操作系统为Ubuntu16.4 安装docker(master和node节点都执行以下操作) 添加使用 HTTPS 传输的软件包以及 CA 证书apt-get updat">
@@ -334,17 +334,26 @@
 <h3 id="安装docker-master和node节点都执行以下操作"><a href="#安装docker-master和node节点都执行以下操作" class="headerlink" title="安装docker(master和node节点都执行以下操作)"></a>安装docker(master和node节点都执行以下操作)</h3><ol>
 <li>添加使用 HTTPS 传输的软件包以及 CA 证书<br>apt-get update &amp;&amp; apt-get install apt-transport-https ca-certificates curl software-properties-common</li>
 <li>添加软件源的 GPG 密钥<br>curl -fsSL <a href="https://download.docker.com/linux/ubuntu/gpg" target="_blank" rel="noopener">https://download.docker.com/linux/ubuntu/gpg</a> | apt-key add -</li>
-<li>向 source.list 中添加 Docker 软件源<br>sudo add-apt-repository \<br>“deb [arch=amd64] <a href="https://download.docker.com/linux/ubuntu" target="_blank" rel="noopener">https://download.docker.com/linux/ubuntu</a> \<br>$(lsb_release -cs) \<br>stable”</li>
-<li>安装docker18.06.2<br>apt-get update &amp;&amp; apt-get install docker-ce=18.06.2~ce~3-0~ubuntu</li>
-<li>设置环境<br>cat &gt; /etc/docker/daemon.json &lt;&lt;EOF<br>{<br>“exec-opts”: [“native.cgroupdriver=systemd”],<br>“log-driver”: “json-file”,<br>“log-opts”: {<br>“max-size”: “100m”<br>},<br>“storage-driver”: “overlay2”<br>}<br>EOF<br>创建文件目录并复制<br>mkdir -p /etc/systemd/system/docker.service.d</li>
+<li><p>向 source.list 中添加 Docker 软件源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">add-apt-repository \</span><br><span class="line">  &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span><br><span class="line">  $(lsb_release -cs) \</span><br><span class="line">  stable&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装docker18.06.2<br>apt-get update &amp;&amp; apt-get install docker-ce=18.06.2~ce~3-0~ubuntu</p>
+</li>
+<li>设置环境  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; /etc/docker/daemon.json &lt;&lt;EOF</span><br><span class="line">&#123;</span><br><span class="line">  &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],</span><br><span class="line">  &quot;log-driver&quot;: &quot;json-file&quot;,</span><br><span class="line">  &quot;log-opts&quot;: &#123;</span><br><span class="line">    &quot;max-size&quot;: &quot;100m&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;storage-driver&quot;: &quot;overlay2&quot;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>创建文件目录并复制<br>mkdir -p /etc/systemd/system/docker.service.d</p>
+<ol>
 <li>因为配置文件变化，重启docker<br>systemctl daemon-reload<br>systemctl restart docker  </li>
 </ol>
 <h3 id="安装kubeadm，kubelet和kubectl-master和node节点都执行如下操作"><a href="#安装kubeadm，kubelet和kubectl-master和node节点都执行如下操作" class="headerlink" title="安装kubeadm，kubelet和kubectl(master和node节点都执行如下操作)"></a>安装kubeadm，kubelet和kubectl(master和node节点都执行如下操作)</h3><p>这里因为墙的原因需要更换为阿里源，执行如下命令</p>
 <ol>
 <li>apt-get update &amp;&amp; apt-get install -y apt-transport-https curl</li>
 <li>curl <a href="https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg</a> | apt-key add -</li>
-<li>cat &lt;<eof>/etc/apt/sources.list.d/kubernetes.list<br>deb <a href="https://mirrors.aliyun.com/kubernetes/apt/" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/apt/</a> kubernetes-xenial main<br>EOF</eof></li>
-<li>apt-get update </li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt;/etc/apt/sources.list.d/kubernetes.list</span><br><span class="line">deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main  </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>apt-get update </p>
+</li>
 <li>apt-get install -y kubelet kubeadm kubectl</li>
 <li>apt-mark hold kubelet kubeadm kubectl</li>
 </ol>
@@ -356,7 +365,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p $HOME/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) $HOME/.kube/config</span><br></pre></td></tr></table></figure>
 <p>或者，如果您是root用户，则可以运行<br>export KUBECONFIG=/etc/kubernetes/admin.conf</p>
 <h3 id="安装flannel网络附件组件"><a href="#安装flannel网络附件组件" class="headerlink" title="安装flannel网络附件组件"></a>安装flannel网络附件组件</h3><p>必须在任何应用程序之前部署网络。此外，CoreDNS将不会在安装网络之前启动。<br>设置/proc/sys/net/bridge/bridge-nf-call-iptables为1通过运行sysctl net.bridge.bridge-nf-call-iptables=1 将桥接的IPv4流量传递到iptables的链。执行如下2个命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sysctl net.bridge.bridge-nf-call-iptables=1</span><br><span class="line">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml</span><br></pre></td></tr></table></figure></p>
-<p>等待几分钟执行kubectl get pods –all-namespaces命令来查看是否所有的pod都是running状态。<br><img src="/images/k8s/getPods.jpg" width="600px" height="500px" alt="图片飞到火星去了"></p>
+<p>等待几分钟执行<code>kubectl get pods --all-namespaces</code>命令来查看是否所有的pod都是running状态。<br><img src="/images/k8s/getPods.jpg" width="600px" height="500px" alt="图片飞到火星去了"></p>
 <h3 id="将node节点加入集群"><a href="#将node节点加入集群" class="headerlink" title="将node节点加入集群"></a>将node节点加入集群</h3><p>执行init时候生成的命令，类似于如下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubeadm join 192.168.16.4:6443 --token 9tjrv2.82mwetagtns3hpg4 \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:45c5981817448230c4afa9a6c0a38c96286fe3ce2bda29b2f49db3e2ab155e4d</span><br></pre></td></tr></table></figure></p>
 <p><img src="/images/k8s/nodeJoin.jpg" width="600px" height="500px" alt="图片飞到火星去了"></p>
 <h3 id="安装metrics-server"><a href="#安装metrics-server" class="headerlink" title="安装metrics-server"></a>安装metrics-server</h3><p>为了实现服务的自动伸缩必须获得资源也就是CPU使用情况，资源使用情况的度量（如容器的 CPU 和内存使用）可以通过 Metrics API 获取。在 k8s.io/metrics 维护 必须部署 metrics-server 才能使用该 API，metrics-server 通过调用 Kubelet Summary API 获取数据  开启聚合层(Aggregation Layer) 。执行命令获取metrics-server资源和更改相关文件。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/kubernetes-incubator/metrics-server</span><br><span class="line">cd metrics-server/deploy/1.8+/</span><br><span class="line">vim metrics-server-deployment.yaml</span><br></pre></td></tr></table></figure></p>
